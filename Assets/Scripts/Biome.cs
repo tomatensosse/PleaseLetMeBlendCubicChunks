@@ -11,10 +11,4 @@ public class Biome : ScriptableObject
 
     [SerializeReference]
     public BiomeShader biomeShader;
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

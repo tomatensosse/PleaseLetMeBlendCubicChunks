@@ -32,6 +32,7 @@ public class WorldGenerator : MonoBehaviour
     }
 
     [Header("Generation Settings")]
+    public Chunk.NeighborSearch neighborSearchMode = Chunk.NeighborSearch.All;
     public WorldGenMode worldGenMode = WorldGenMode.BlendCaseTest;
     [ShowIf("@worldGenMode != WorldGenMode.BlendCaseTest")] public int setSeed = 0;
     [ShowIf("@worldGenMode != WorldGenMode.BlendCaseTest")] public int renderDistanceHorizontal = 2;

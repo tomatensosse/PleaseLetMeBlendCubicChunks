@@ -11,7 +11,7 @@ public abstract class Chunk : MonoBehaviour
 
     private WorldSettings ws => WorldGenerator.Settings;
 
-    enum NeighborSearch
+    public enum NeighborSearch
     {
         SixFace, // index: 0-5
         TwelveEdge, // index: 6-17
@@ -99,7 +99,7 @@ public abstract class Chunk : MonoBehaviour
 
     public virtual void SecondInitialize()
     {
-        FindNeighbors(NeighborSearch.All);
+        FindNeighbors();
 
         secondInitialized = true;
     }
@@ -126,25 +126,30 @@ public abstract class Chunk : MonoBehaviour
             direction.z != 0 ? indicatorThickness : chunkSize - indicatorOffset * 4
         );
 
+        Gizmos.color = new Color(
+            indicatorColor.r,
+            indicatorColor.g,
+            indicatorColor.b,
+            0.5f // semi-transparent
+        );
+
         switch (c)
         {
             case 1:
-                Gizmos.color = indicatorColor;
                 Gizmos.DrawCube(transform.position + center, size);
                 break;
             case 2:
-                Gizmos.color = indicatorColor;
                 Gizmos.DrawCube(transform.position + center, size);
                 break;
             case 3:
-                Gizmos.color = indicatorColor;
                 Gizmos.DrawCube(transform.position + center, size);
                 break;
         }
     }
 
-    private void FindNeighbors(NeighborSearch searchType)
+    private void FindNeighbors()
     {
+        NeighborSearch neighborSearchMode = WorldGenerator.Instance.neighborSearchMode;
         // SixFace | index: 0-5
         // TwelveEdge | index: 6-17
         // EightCorner | index: 18-25
@@ -154,7 +159,7 @@ public abstract class Chunk : MonoBehaviour
 
         List<Vector3Int> searchDirections = new List<Vector3Int>();
 
-        switch (searchType)
+        switch (neighborSearchMode)
         {
             case NeighborSearch.SixFace:
                 searchDirections.AddRange(searchDirectionsAll.GetRange(0, 6));

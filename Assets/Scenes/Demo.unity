@@ -389,6 +389,7 @@ MonoBehaviour:
   chunkSize: 8
   numPointsPerAxis: 4
   threadGroupSize: 8
+  neighborSearchMode: 3
   worldGenMode: 0
   setSeed: 0
   renderDistanceHorizontal: 2
@@ -396,16 +397,16 @@ MonoBehaviour:
   worldSize: {x: 5, y: 5, z: 5}
   blendCaseMap:
     y1:
-      x1: {x: -1, y: 0, z: 0}
+      x1: {x: 0, y: 0, z: 0}
       x2: {x: 0, y: 0, z: 0}
       x3: {x: 0, y: 0, z: 0}
     y2:
-      x1: {x: 0, y: 0, z: 0}
-      x2: {x: 0, y: 0, z: 0}
+      x1: {x: 0, y: -1, z: -1}
+      x2: {x: 0, y: -1, z: -1}
       x3: {x: 0, y: 0, z: 0}
     y3:
-      x1: {x: 0, y: 0, z: 0}
-      x2: {x: 0, y: 0, z: 0}
+      x1: {x: 0, y: -1, z: 1}
+      x2: {x: 0, y: -1, z: -1}
       x3: {x: 0, y: 0, z: 0}
 --- !u!4 &376395480
 Transform:
