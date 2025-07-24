@@ -15,9 +15,22 @@ MonoBehaviour:
   biomeName: 
   biomeColor: {r: 0.39364716, g: 0.764151, b: 0.34963512, a: 1}
   biomeShader:
-    rid: -2
+    rid: 4778838738819874816
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 4778838738819874816
+      type: {class: SimpleNoiseShader, ns: , asm: Assembly-CSharp}
+      data:
+        shader: {fileID: 7200000, guid: 926c7961131488c498827d753ae58bf3, type: 3}
+        offset: {x: 0, y: 0, z: 0}
+        parameters: {x: 1, y: 0, z: 0, w: 0}
+        numOctaves: 2
+        lacunarity: 1.5
+        persistence: 3.5
+        noiseScale: 3.42
+        noiseWeight: 0.29
+        floorOffset: -16
+        weightMultiplier: 1
+        hardFloor: 1
+        hardFloorWeight: 1

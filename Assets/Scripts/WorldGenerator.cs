@@ -9,6 +9,9 @@ public class WorldGenerator : MonoBehaviour
     public static bool IsReady => Instance.isReady;
     public static WorldSettings Settings => Instance.worldSettings;
     public static int[,,] Map => Instance.map;
+    public static Material DefaultMaterial => Instance.defaultMaterial;
+
+    public Material defaultMaterial;
 
     public static int RenderDistanceHorizontal => Instance.renderDistanceHorizontal;
     public static int RenderDistanceVertical => Instance.renderDistanceVertical;
@@ -76,6 +79,7 @@ public class WorldGenerator : MonoBehaviour
         isReady = false;
 
         worldSettings = GenerateWorldSettings();
+        MeshGenerator.Instance.CreateBuffers();
         map = MapGenerator.Instance.GenerateMap();
         ChunkGenerator.Instance.GenerateChunks();
 

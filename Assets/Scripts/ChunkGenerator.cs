@@ -48,6 +48,27 @@ public class ChunkGenerator : MonoBehaviour
         {
             chunk.SecondInitialize();
         }
+
+        foreach (var chunk in chunks.Values)
+        {
+            if (chunk is BiomeChunk biomeChunk)
+            {
+                biomeChunk.GenerateDensity();
+            }
+        }
+
+        foreach (var chunk in chunks.Values)
+        {
+            if (chunk is BlendChunk blendChunk)
+            {
+                blendChunk.GenerateBlendedDensity();
+            }
+        }
+
+        foreach (var chunk in chunks.Values)
+        {
+            chunk.GenerateMesh();
+        }
     }
 
     public void GenerateChunk(Vector3Int position)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Chunk : MonoBehaviour
@@ -7,9 +8,15 @@ public abstract class Chunk : MonoBehaviour
     [PropertyRange(0.4f, 0.8f)] public float indicatorThickness = 0.5f;
     [PropertyRange(0.4f, 0.6f)] public float indicatorOffset = 0.5f;
 
-    private bool secondInitialized = false;
+    protected bool secondInitialized = false;
 
-    private WorldSettings ws => WorldGenerator.Settings;
+    public Vector4[,,] densityValues;
+
+    protected ComputeBuffer densityBuffer;
+
+    public bool isDensityGenerated = false;
+
+    protected WorldSettings ws => WorldGenerator.Settings;
 
     public enum NeighborSearch
     {
@@ -56,46 +63,23 @@ public abstract class Chunk : MonoBehaviour
         new Vector3Int(-1, -1, -1), // Left Down Backward
     };
 
-    protected Dictionary<Vector3Int, Chunk> neighbors;
+    public Dictionary<Vector3Int, Chunk> neighbors;
 
     protected Vector3Int chunkPosition;
 
     protected Color chunkColor = Color.white;
     protected Color indicatorColor = Color.white;
 
-    void OnDrawGizmos()
+    protected MeshFilter meshFilter;
+    protected MeshRenderer meshRenderer;
+    protected MeshCollider meshCollider;
+
+    public virtual void Initialize(Vector3Int chunkPosition, Biome biome)
     {
-        if (!WorldGenerator.Instance) { return; }
-        if (!WorldGenerator.IsReady) { return; }
-        if (!secondInitialized) { return; }
-
-        if (this is BiomeChunk currentChunk)
-        {
-            foreach (var kvp in neighbors)
-            {
-                if (kvp.Value is BlendChunk blendChunk)
-                {
-                    DrawDirection(kvp.Key);
-                }
-            }
-        }
-        if (this is BlendChunk)
-        {
-            foreach (var kvp in neighbors)
-            {
-                if (kvp.Value is BiomeChunk biomeChunk)
-                {
-                    DrawDirection(kvp.Key);
-                }
-            }
-        }
-
-        Gizmos.color = chunkColor;
-
-        Gizmos.DrawWireCube(transform.position, Vector3.one * ws.chunkSize);
+        meshFilter = this.AddComponent<MeshFilter>();
+        meshRenderer = this.AddComponent<MeshRenderer>();
+        meshCollider = this.AddComponent<MeshCollider>();
     }
-
-    public abstract void Initialize(Vector3Int chunkPosition, Biome biome);
 
     public virtual void SecondInitialize()
     {
@@ -145,6 +129,25 @@ public abstract class Chunk : MonoBehaviour
                 Gizmos.DrawCube(transform.position + center, size);
                 break;
         }
+    }
+
+    public virtual void GenerateMesh()
+    {
+        Mesh mesh;
+
+        mesh = MeshGenerator.Instance.GenerateMesh(densityBuffer, 1);
+
+        meshFilter.mesh = mesh;
+        meshFilter.sharedMesh = mesh;
+        meshRenderer.material = WorldGenerator.DefaultMaterial;
+        meshRenderer.sharedMaterial = WorldGenerator.DefaultMaterial;
+
+        if (mesh.vertexCount >= 3)
+        {
+            meshCollider.sharedMesh = mesh;
+        }
+
+        densityBuffer.Release();
     }
 
     private void FindNeighbors()
