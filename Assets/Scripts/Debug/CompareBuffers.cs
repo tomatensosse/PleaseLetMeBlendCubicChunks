@@ -6,8 +6,11 @@ public class CompareBuffers : MonoBehaviour
     public BlendChunk blendChunk;
     public BiomeChunk biomeChunk;
 
+    public string customInfo = "";
     string dump = "";
     string dumpInfo = "";
+
+    string advancedDump = "";
 
     [Button("Compare Buffers")]
     public void Compare(int index)
@@ -40,6 +43,7 @@ public class CompareBuffers : MonoBehaviour
         dump += $"numPointsPerAxis: {WorldGenerator.Settings.numPointsPerAxis}\n";
         dump += $"blendChunk: {blendChunk.name}\n";
         dump += $"biomeChunk: {biomeChunk.name}\n";
+        dump += $"customInfo: {customInfo}\n";
         dump += "\n";
         dump += dumpInfo;
 
@@ -47,5 +51,19 @@ public class CompareBuffers : MonoBehaviour
             $"{Application.dataPath}/Dumps/CompareBuffers-{System.DateTime.Now.ToString("MM-dd-HH-mm-ss")}.txt",
             dump
         );
+    }
+
+    [Button("Advanced Dump")]
+    public void AdvancedDump()
+    {
+
+    }
+
+    public void AppendAdvancedDump(Chunk chunk, string info)
+    {
+        advancedDump += $"[INFO: {info}]\n";
+        advancedDump += $"[TYPE: {chunk.GetType().Name}]\n";
+
+        
     }
 }

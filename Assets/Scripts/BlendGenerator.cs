@@ -34,6 +34,7 @@ public class BlendGenerator : MonoBehaviour
     /// EightCorner it will blend neighbors that are adjacent, on the edges and diagonally
     /// AllFaces, it will blend all neighbors including diagonals
     /// Goal is to implement a single function that can handle all blending cases and change neighborSearchMode to debug it
+    // Fix in BlendGenerator.cs - GenerateBlendedDensity method
     public Vector4[,,] GenerateBlendedDensity(BlendChunk blendChunk)
     {
         int nppa = ws.numPointsPerAxis;
@@ -60,9 +61,19 @@ public class BlendGenerator : MonoBehaviour
                             Vector3Int blendPos = GetEdgeOrCornerBlendPos(pos, dir, nppa);
                             Vector3Int neighborPos = GetEdgeOrCornerNeighborPos(pos, dir, nppa);
 
-                            blendedDensity[blendPos.x, blendPos.y, blendPos.z] =
-                                biomeChunk.densityValues[neighborPos.x, neighborPos.y, neighborPos.z];
+                            // Get the original neighbor data
+                            Vector4 neighborData = biomeChunk.densityValues[neighborPos.x, neighborPos.y, neighborPos.z];
+                            
+                            // FIXED: Transform the coordinates to blend chunk's local space
+                            Vector4 transformedData = TransformCoordinatesToBlendSpace(
+                                neighborData, 
+                                blendPos, 
+                                blendChunk.transform.position,
+                                nppa,
+                                ws.chunkSize
+                            );
 
+                            blendedDensity[blendPos.x, blendPos.y, blendPos.z] = transformedData;
                             isSet[blendPos.x, blendPos.y, blendPos.z] = true;
                         }
                     }
@@ -74,6 +85,18 @@ public class BlendGenerator : MonoBehaviour
         InterpolateUnsetFaceSlices(blendedDensity, isSet);
 
         return blendedDensity;
+    }
+
+    // NEW METHOD: Transform coordinates from neighbor space to blend space
+    private Vector4 TransformCoordinatesToBlendSpace(Vector4 neighborData, Vector3Int blendPos, Vector3 blendChunkCenter, int nppa, int chunkSize)
+    {
+        // Calculate what the local coordinates should be for this blend position
+        float localX = blendPos.x * (chunkSize / (float)(nppa - 1)) - chunkSize/2f;
+        float localY = blendPos.y * (chunkSize / (float)(nppa - 1)) - chunkSize/2f;
+        float localZ = blendPos.z * (chunkSize / (float)(nppa - 1)) - chunkSize/2f;
+        
+        // Return the corrected coordinate data (keep the original density value in .w)
+        return new Vector4(localX, localY, localZ, neighborData.w);
     }
 
     bool IsOnFace(Vector3Int pos, Vector3Int dir, int n)
