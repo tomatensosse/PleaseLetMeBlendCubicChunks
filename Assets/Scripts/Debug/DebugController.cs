@@ -61,6 +61,16 @@ public class DebugController : MonoBehaviour
             WorldGenerator.Instance.GenerateWorld();
         }
 
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (ChunkGenerator.Chunks.TryGetValue(currentChunkPosition, out Chunk chunk))
+            {
+                Debug.Log($"Current chunk: {chunk.GetType().Name} at {currentChunkPosition}");
+
+                DensityDisplayer.Instance.ToggleDensities(chunk);
+            }
+        }
+
         input = Vector3Int.zero;
 
         if (Input.GetKey(KeyCode.W)) input.z += 1;

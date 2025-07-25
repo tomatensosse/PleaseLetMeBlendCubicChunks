@@ -16,6 +16,8 @@ public class WorldGenerator : MonoBehaviour
     public static int RenderDistanceHorizontal => Instance.renderDistanceHorizontal;
     public static int RenderDistanceVertical => Instance.renderDistanceVertical;
 
+    public bool displayNeighbors = false;
+
     protected int[,,] map;
 
     [Header("World Settings")]

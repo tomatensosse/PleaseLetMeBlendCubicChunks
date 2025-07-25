@@ -26,6 +26,7 @@ public class DebugUI : MonoBehaviour
         GUILayout.Label("[WASDQE] - Move through chunks");
         GUILayout.Label("[ARROW KEYS] - Change render distance");
         GUILayout.Label("[R] - Regenerate world");
+        GUILayout.Label("[F] - Display densities");
         // Add more GUILayout elements here
         GUILayout.EndVertical();
         GUILayout.EndArea();

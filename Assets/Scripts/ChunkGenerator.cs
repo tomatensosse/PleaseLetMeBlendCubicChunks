@@ -10,6 +10,8 @@ public class ChunkGenerator : MonoBehaviour
     private Transform chunkHolder;
     private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
+    public bool generateMesh = true;
+
     private WorldSettings ws => WorldGenerator.Settings;
 
     void Awake()
@@ -65,9 +67,12 @@ public class ChunkGenerator : MonoBehaviour
             }
         }
 
-        foreach (var chunk in chunks.Values)
+        if (generateMesh)
         {
-            chunk.GenerateMesh();
+            foreach (var chunk in chunks.Values)
+            {
+                chunk.GenerateMesh();
+            }
         }
     }
 
@@ -85,12 +90,12 @@ public class ChunkGenerator : MonoBehaviour
             Biome biome = WorldGenerator.Instance.biomes[biomeIndex];
 
             chunk = chunkObject.AddComponent<BiomeChunk>();
-            chunk.Initialize(position, biome);
+            chunk.Initialize(position, biome, WorldGenerator.Instance.displayNeighbors);
         }
         else if (WorldGenerator.Map[position.x, position.y, position.z] == -1)
         {
             chunk = chunkObject.AddComponent<BlendChunk>();
-            chunk.Initialize(position, null); // No biome for blend case chunks
+            chunk.Initialize(position, null, WorldGenerator.Instance.displayNeighbors); // No biome for blend case chunks
         }
         else
         {

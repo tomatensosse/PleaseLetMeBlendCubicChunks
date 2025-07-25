@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class BlendChunk : Chunk
 {
-    public override void Initialize(Vector3Int chunkPosition, Biome biome)
+    public override void Initialize(Vector3Int chunkPosition, Biome biome, bool displayNeighbors)
     {
-        base.Initialize(chunkPosition, biome);
+        base.Initialize(chunkPosition, biome, displayNeighbors);
 
         this.chunkPosition = chunkPosition;
         chunkColor = new Color(1f, 0f, 1f, 0.2f); // magenta with transparency
@@ -20,6 +20,8 @@ public class BlendChunk : Chunk
     public void GenerateBlendedDensity()
     {
         densityValues = BlendGenerator.Instance.GenerateBlendedDensity(this);
+
+        isDensityGenerated = true;
     }
 
     public override void GenerateMesh()
@@ -69,6 +71,6 @@ public class BlendChunk : Chunk
 
         Gizmos.color = chunkColor;
 
-        Gizmos.DrawWireCube(transform.position, Vector3.one * ws.chunkSize);
+        Gizmos.DrawWireCube(transform.position, Vector3.one * (ws.chunkSize - 0.5f));
     }
 }

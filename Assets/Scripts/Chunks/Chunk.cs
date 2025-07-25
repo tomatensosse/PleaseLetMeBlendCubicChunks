@@ -16,6 +16,8 @@ public abstract class Chunk : MonoBehaviour
 
     public bool isDensityGenerated = false;
 
+    private bool displayNeighbors = false;
+
     protected WorldSettings ws => WorldGenerator.Settings;
 
     public enum NeighborSearch
@@ -74,11 +76,13 @@ public abstract class Chunk : MonoBehaviour
     protected MeshRenderer meshRenderer;
     protected MeshCollider meshCollider;
 
-    public virtual void Initialize(Vector3Int chunkPosition, Biome biome)
+    public virtual void Initialize(Vector3Int chunkPosition, Biome biome, bool displayNeighbors)
     {
         meshFilter = this.AddComponent<MeshFilter>();
         meshRenderer = this.AddComponent<MeshRenderer>();
         meshCollider = this.AddComponent<MeshCollider>();
+
+        this.displayNeighbors = displayNeighbors;
     }
 
     public virtual void SecondInitialize()
@@ -90,6 +94,8 @@ public abstract class Chunk : MonoBehaviour
 
     public virtual void DrawDirection(Vector3Int direction)
     {
+        if (!displayNeighbors) return;
+
         int c = 0; // case
 
         if (direction.x != 0) c++;

@@ -4,9 +4,9 @@ public class BiomeChunk : Chunk
 {
     public Biome biome;
 
-    public override void Initialize(Vector3Int chunkPosition, Biome biome)
+    public override void Initialize(Vector3Int chunkPosition, Biome biome, bool displayNeighbors)
     {
-        base.Initialize(chunkPosition, biome);
+        base.Initialize(chunkPosition, biome, displayNeighbors);
 
         this.chunkPosition = chunkPosition;
         this.biome = biome;
@@ -66,6 +66,6 @@ public class BiomeChunk : Chunk
 
         Gizmos.color = chunkColor;
 
-        Gizmos.DrawWireCube(transform.position, Vector3.one * ws.chunkSize);
+        Gizmos.DrawWireCube(transform.position, Vector3.one * (ws.chunkSize - 0.5f));
     }
 }
