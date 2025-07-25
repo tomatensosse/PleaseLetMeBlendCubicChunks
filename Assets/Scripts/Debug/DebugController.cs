@@ -3,6 +3,7 @@ using UnityEngine;
 public class DebugController : MonoBehaviour
 {
     public static DebugController Instance { get; private set; }
+    public static Vector3Int Position => Instance.currentChunkPosition;
 
     public float smoothMoveTime = 20f;
 

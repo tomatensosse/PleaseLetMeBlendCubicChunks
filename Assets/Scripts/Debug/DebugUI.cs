@@ -13,14 +13,15 @@ public class DebugUI : MonoBehaviour
         GUILayout.BeginVertical();
         GUILayout.Label($"RenDistanceH: {WorldGenerator.RenderDistanceHorizontal}");
         GUILayout.Label($"RenDistanceV: {WorldGenerator.RenderDistanceVertical}");
+        GUILayout.Label($"ChunkPosition: {DebugController.Position}");
         // Add more GUILayout elements here
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
         // --- Top Right Box ---
         float areaWidth = Screen.width / 3f;
-        GUILayout.BeginArea(new Rect(Screen.width - areaWidth - margin, margin, areaWidth, 100));
-        GUI.Box(new Rect(0, 0, areaWidth, 100), ""); // Background box
+        GUILayout.BeginArea(new Rect(Screen.width - areaWidth - margin, margin, areaWidth, 120));
+        GUI.Box(new Rect(0, 0, areaWidth, 250), ""); // Background box
         GUILayout.BeginVertical();
         GUILayout.Label("CONTROLS:", SirenixGUIStyles.BoldTitleCentered);
         GUILayout.Label("[WASDQE] - Move through chunks");

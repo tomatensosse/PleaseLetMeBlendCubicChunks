@@ -13,7 +13,7 @@ public abstract class Chunk : MonoBehaviour
 
     public Vector4[,,] densityValues;
 
-    protected ComputeBuffer densityBuffer;
+    public ComputeBuffer densityBuffer;
 
     public bool isDensityGenerated = false;
 
