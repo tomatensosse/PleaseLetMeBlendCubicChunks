@@ -38,56 +38,68 @@ public class BlendGenerator : MonoBehaviour
     {
         int nppa = ws.numPointsPerAxis;
         Vector4[,,] blendedDensity = new Vector4[nppa, nppa, nppa];
+        bool[,,] isSet = new bool[nppa, nppa, nppa];
 
         foreach (var kvp in blendChunk.neighbors)
         {
             if (kvp.Value is BiomeChunk biomeChunk && biomeChunk.isDensityGenerated)
             {
-                Vector3Int direction = kvp.Key;
-                if (!IsDirectionAllowed(direction)) continue;
+                Vector3Int dir = kvp.Key;
+                if (!IsDirectionAllowed(dir)) continue;
 
-                // Determine points to blend based on direction
+                // Determine the slice to copy
                 for (int x = 0; x < nppa; x++)
                 {
                     for (int y = 0; y < nppa; y++)
                     {
                         for (int z = 0; z < nppa; z++)
                         {
-                            Vector3Int localPos = new Vector3Int(x, y, z);
-                            Vector3Int blendPos = localPos;
-                            Vector3Int neighborPos = localPos;
+                            Vector3Int pos = new Vector3Int(x, y, z);
+                            if (!IsOnFace(pos, dir, nppa)) continue;
 
-                            // Conditions for faces/edges/corners
-                            bool match =
-                                (direction.x != 0 && (x == (direction.x > 0 ? nppa - 1 : 0))) ||
-                                (direction.y != 0 && (y == (direction.y > 0 ? nppa - 1 : 0))) ||
-                                (direction.z != 0 && (z == (direction.z > 0 ? nppa - 1 : 0)));
-
-                            if (!match) continue;
-
-                            // Set positions
-                            if (direction.x != 0) {
-                                blendPos.x = direction.x > 0 ? nppa - 1 : 0;
-                                neighborPos.x = direction.x > 0 ? 0 : nppa - 1;
-                            }
-                            if (direction.y != 0) {
-                                blendPos.y = direction.y > 0 ? nppa - 1 : 0;
-                                neighborPos.y = direction.y > 0 ? 0 : nppa - 1;
-                            }
-                            if (direction.z != 0) {
-                                blendPos.z = direction.z > 0 ? nppa - 1 : 0;
-                                neighborPos.z = direction.z > 0 ? 0 : nppa - 1;
-                            }
+                            Vector3Int blendPos = GetEdgeOrCornerBlendPos(pos, dir, nppa);
+                            Vector3Int neighborPos = GetEdgeOrCornerNeighborPos(pos, dir, nppa);
 
                             blendedDensity[blendPos.x, blendPos.y, blendPos.z] =
                                 biomeChunk.densityValues[neighborPos.x, neighborPos.y, neighborPos.z];
+
+                            isSet[blendPos.x, blendPos.y, blendPos.z] = true;
                         }
                     }
                 }
             }
         }
 
+        // Fill unset face values by interpolating
+        InterpolateUnsetFaceSlices(blendedDensity, isSet);
+
         return blendedDensity;
+    }
+
+    bool IsOnFace(Vector3Int pos, Vector3Int dir, int n)
+    {
+        return
+            (dir.x != 0 && pos.x == (dir.x > 0 ? n - 1 : 0)) ||
+            (dir.y != 0 && pos.y == (dir.y > 0 ? n - 1 : 0)) ||
+            (dir.z != 0 && pos.z == (dir.z > 0 ? n - 1 : 0));
+    }
+
+    Vector3Int GetEdgeOrCornerBlendPos(Vector3Int pos, Vector3Int dir, int n)
+    {
+        return new Vector3Int(
+            dir.x != 0 ? (dir.x > 0 ? n - 1 : 0) : pos.x,
+            dir.y != 0 ? (dir.y > 0 ? n - 1 : 0) : pos.y,
+            dir.z != 0 ? (dir.z > 0 ? n - 1 : 0) : pos.z
+        );
+    }
+
+    Vector3Int GetEdgeOrCornerNeighborPos(Vector3Int pos, Vector3Int dir, int n)
+    {
+        return new Vector3Int(
+            dir.x != 0 ? (dir.x > 0 ? 0 : n - 1) : pos.x,
+            dir.y != 0 ? (dir.y > 0 ? 0 : n - 1) : pos.y,
+            dir.z != 0 ? (dir.z > 0 ? 0 : n - 1) : pos.z
+        );
     }
 
     bool IsDirectionAllowed(Vector3Int dir)
@@ -104,6 +116,62 @@ public class BlendGenerator : MonoBehaviour
                 return dir != Vector3Int.zero;
             default:
                 return false;
+        }
+    }
+
+    void InterpolateUnsetFaceSlices(Vector4[,,] grid, bool[,,] isSet)
+    {
+        int n = ws.numPointsPerAxis;
+
+        for (int axis = 0; axis < 3; axis++) // 0=x, 1=y, 2=z
+        {
+            for (int i = 0; i < n; i++) // each face slice
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    Vector2Int fixedIndices = new Vector2Int(i, j);
+
+                    // Interpolate along the remaining axis
+                    for (int k = 0; k < n; k++)
+                    {
+                        Vector3Int pos = GetVector3IntFromAxes(axis, fixedIndices, k);
+                        if (isSet[pos.x, pos.y, pos.z]) continue;
+
+                        // Find nearest set values on both sides
+                        int before = -1, after = -1;
+                        for (int d = k - 1; d >= 0; d--)
+                        {
+                            var p = GetVector3IntFromAxes(axis, fixedIndices, d);
+                            if (isSet[p.x, p.y, p.z]) { before = d; break; }
+                        }
+                        for (int d = k + 1; d < n; d++)
+                        {
+                            var p = GetVector3IntFromAxes(axis, fixedIndices, d);
+                            if (isSet[p.x, p.y, p.z]) { after = d; break; }
+                        }
+
+                        if (before != -1 && after != -1)
+                        {
+                            float t = (k - before) / (float)(after - before);
+                            Vector3Int pb = GetVector3IntFromAxes(axis, fixedIndices, before);
+                            Vector3Int pa = GetVector3IntFromAxes(axis, fixedIndices, after);
+                            grid[pos.x, pos.y, pos.z] = Vector4.Lerp(grid[pb.x, pb.y, pb.z], grid[pa.x, pa.y, pa.z], t);
+                            isSet[pos.x, pos.y, pos.z] = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Vector3Int GetVector3IntFromAxes(int axis, Vector2Int fixedIndices, int changing)
+    {
+        switch (axis)
+        {
+            case 0: return new Vector3Int(changing, fixedIndices.x, fixedIndices.y); // x varies
+            case 1: return new Vector3Int(fixedIndices.x, changing, fixedIndices.y); // y varies
+            case 2: return new Vector3Int(fixedIndices.x, fixedIndices.y, changing); // z varies
+            default: return Vector3Int.zero;
         }
     }
 }

@@ -29,27 +29,6 @@ public class BiomeChunk : Chunk
         isDensityGenerated = true;
     }
 
-    private void SaveDensities(ComputeBuffer densityBuffer)
-    {
-        int n = ws.numPointsPerAxis;
-        densityValues = new Vector4[n, n, n];
-
-        Vector4[] flat = new Vector4[n * n * n];
-
-        densityBuffer.GetData(flat);
-
-        for (int x = 0; x < n; x++)
-        {
-            for (int y = 0; y < n; y++)
-            {
-                for (int z = 0; z < n; z++)
-                {
-                    densityValues[x, y, z] = flat[x + y * n + z * n * n];
-                }
-            }
-        }
-    }
-
     void OnDrawGizmos()
     {
         if (!WorldGenerator.Instance) { return; }

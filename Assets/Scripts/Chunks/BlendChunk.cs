@@ -31,30 +31,6 @@ public class BlendChunk : Chunk
         base.GenerateMesh();
     }
 
-    private ComputeBuffer BuildBuffer()
-    {
-        // Convert densityValues Vector4[,,] to Vector4[]
-        int nppa = ws.numPointsPerAxis;
-        Vector4[] flat = new Vector4[nppa * nppa * nppa];
-
-        for (int x = 0; x < nppa; x++)
-        {
-            for (int y = 0; y < nppa; y++)
-            {
-                for (int z = 0; z < nppa; z++)
-                {
-                    flat[x + y * nppa + z * nppa * nppa] = densityValues[x, y, z];
-                }
-            }
-        }
-
-        // Create a new compute buffer
-        ComputeBuffer densityBuffer = new ComputeBuffer(flat.Length, sizeof(float) * 4);
-        densityBuffer.SetData(flat);
-
-        return densityBuffer;
-    }
-
     void OnDrawGizmos()
     {
         if (!WorldGenerator.Instance) { return; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
@@ -153,7 +154,82 @@ public abstract class Chunk : MonoBehaviour
             meshCollider.sharedMesh = mesh;
         }
 
-        densityBuffer.Release();
+        //densityBuffer.Release(); Disabled for dumping densities
+    }
+
+    [Button("Dump Densities")]
+    public void DumpDensities()
+    {
+        string dumpName = $"{this.GetType().Name}-at-{System.DateTime.Now.ToString("MM-dd-HH-mm-ss")}.txt";
+
+        int dvl = densityValues.GetLength(0);
+
+        Vector4[] densityValuesFlat = new Vector4[dvl * dvl * dvl];
+
+        for (int x = 0; x < dvl; x++)
+        {
+            for (int y = 0; y < dvl; y++)
+            {
+                for (int z = 0; z < dvl; z++)
+                {
+                    densityValuesFlat[x + y * dvl + z * dvl * dvl] = densityValues[x, y, z];
+                }
+            }
+        }
+
+        Vector4[] densityBufferFlat = new Vector4[dvl * dvl * dvl];
+
+        densityBuffer.GetData(densityBufferFlat);
+
+        System.IO.File.WriteAllText(
+            $"{Application.dataPath}/Dumps/{dumpName}",
+            $"Density Values:\n{string.Join("\n", densityValuesFlat)}\n\nDensity Buffer:\n{string.Join("\n", densityBufferFlat)}"
+        );
+    }
+
+    protected ComputeBuffer BuildBuffer()
+    {
+        // Convert densityValues Vector4[,,] to Vector4[]
+        int nppa = ws.numPointsPerAxis;
+        Vector4[] flat = new Vector4[nppa * nppa * nppa];
+
+        for (int x = 0; x < nppa; x++)
+        {
+            for (int y = 0; y < nppa; y++)
+            {
+                for (int z = 0; z < nppa; z++)
+                {
+                    flat[x + y * nppa + z * nppa * nppa] = densityValues[x, y, z];
+                }
+            }
+        }
+
+        // Create a new compute buffer
+        ComputeBuffer newDensityBuffer = new ComputeBuffer(flat.Length, sizeof(float) * 4);
+        newDensityBuffer.SetData(flat);
+
+        return newDensityBuffer;
+    }
+
+    protected void SaveDensities(ComputeBuffer densityBuffer)
+    {
+        int n = ws.numPointsPerAxis;
+        densityValues = new Vector4[n, n, n];
+
+        Vector4[] flat = new Vector4[n * n * n];
+
+        densityBuffer.GetData(flat);
+
+        for (int x = 0; x < n; x++)
+        {
+            for (int y = 0; y < n; y++)
+            {
+                for (int z = 0; z < n; z++)
+                {
+                    densityValues[x, y, z] = flat[x + y * n + z * n * n];
+                }
+            }
+        }
     }
 
     private void FindNeighbors()
