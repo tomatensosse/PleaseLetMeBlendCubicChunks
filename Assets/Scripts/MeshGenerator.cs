@@ -10,6 +10,8 @@ public class MeshGenerator : MonoBehaviour
 
     public ComputeShader marchingCubesShader;
 
+    public float zeroPoint = 0f;
+
     private ComputeBuffer pointsBuffer;
     private ComputeBuffer triangleBuffer;
     private ComputeBuffer triCountBuffer;
@@ -46,13 +48,13 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    public Mesh GenerateMesh(ComputeBuffer pointsBuffer, float isoLevel)
+    public Mesh GenerateMesh(ComputeBuffer pointsBuffer) // add zeroPoint as parameter
     {
         triangleBuffer.SetCounterValue(0);
         marchingCubesShader.SetBuffer(0, "points", pointsBuffer);
         marchingCubesShader.SetBuffer(0, "triangles", triangleBuffer);
         marchingCubesShader.SetInt("numPointsPerAxis", ws.numPointsPerAxis);
-        marchingCubesShader.SetFloat("isoLevel", isoLevel);
+        marchingCubesShader.SetFloat("zeroPoint", zeroPoint);
 
         marchingCubesShader.Dispatch(0, ws.numThreadsPerAxis, ws.numThreadsPerAxis, ws.numThreadsPerAxis);
 
@@ -70,16 +72,23 @@ public class MeshGenerator : MonoBehaviour
 
         var vertices = new Vector3[numTris * 3];
         var meshTriangles = new int[numTris * 3];
+        var uvs = new Vector2[numTris * 3]; // NEW: UV coordinates array
 
-        for (int i = 0; i < numTris; i++) {
-            for (int j = 0; j < 3; j++) {
-                meshTriangles[i * 3 + j] = i * 3 + j;
-                vertices[i * 3 + j] = tris[i][j];
+        for (int i = 0; i < numTris; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                int vertIndex = i * 3 + j;
+                meshTriangles[vertIndex] = vertIndex;
+                vertices[vertIndex] = tris[i][j];
+
+                uvs[vertIndex] = GenerateUV(vertices[vertIndex]);
             }
         }
 
         mesh.vertices = vertices;
         mesh.triangles = meshTriangles;
+        mesh.uv = uvs; // NEW: Assign UV coordinates
 
         mesh.RecalculateNormals();
 
@@ -104,6 +113,26 @@ public class MeshGenerator : MonoBehaviour
         Debug.Log("MeshGenerator | Buffers created successfully.");
     }
 
+    // FIXED: Simple UV mapping to avoid cross patterns
+    private Vector2 GenerateUV(Vector3 worldPosition)
+    {
+        // Simple approach: use just X and Z coordinates with consistent scaling
+        float scale = 0.25f; // Adjust this value to change texture size
+        
+        float u = worldPosition.x * scale;
+        float v = worldPosition.z * scale;
+        
+        // Keep only the fractional part for tiling
+        u = u - Mathf.Floor(u);
+        v = v - Mathf.Floor(v);
+        
+        // Ensure we're in 0-1 range
+        u = Mathf.Abs(u);
+        v = Mathf.Abs(v);
+        
+        return new Vector2(u, v);
+    }
+    
     private void ReleaseBuffers()
     {
         if (triangleBuffer != null)

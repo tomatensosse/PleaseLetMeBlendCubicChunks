@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3531e2f1e36a4044890da98b3d11216, type: 3}
-  m_Name: Cavern
+  m_Name: Dark Cavern
   m_EditorClassIdentifier: 
-  biomeColor: {r: 0.26415092, g: 0.13526793, b: 0.026165891, a: 1}
+  biomeColor: {r: 1, g: 0.21226418, b: 0.21226418, a: 1}
   biomeMaterial: {fileID: 2100000, guid: 72787919eead89744bca8877dfa8fdc3, type: 2}
   biomeShader:
-    rid: 4778838770180947968
+    rid: 4778838770180947969
   references:
     version: 2
     RefIds:
-    - rid: 4778838770180947968
+    - rid: 4778838770180947969
       type: {class: CaveNoiseShader, ns: , asm: Assembly-CSharp}
       data:
         shader: {fileID: 7200000, guid: de1ef68d84760b240a9d7b8604f8794d, type: 3}
@@ -27,13 +27,13 @@ MonoBehaviour:
         parameters: {x: 1, y: 0, z: 0, w: 0}
         numOctaves: 2
         caveScale: 1
-        caveThreshold: 0.2
-        caveIntensity: 5
-        caveOctaves: 4
-        caveLacunarity: 1.45
-        cavePersistence: 0.267
-        yOffset: 0
-        verticalScale: 0.62
-        caveFloor: 19.6
-        caveCeiling: -21.5
-        surfaceBlend: 3.2
+        caveThreshold: 0.4
+        caveIntensity: 1
+        caveOctaves: 3
+        caveLacunarity: 2
+        cavePersistence: 0.5
+        yOffset: 1
+        verticalScale: 1
+        caveFloor: -10
+        caveCeiling: 30
+        surfaceBlend: 5

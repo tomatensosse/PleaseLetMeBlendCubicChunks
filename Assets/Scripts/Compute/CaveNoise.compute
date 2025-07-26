@@ -1,0 +1,157 @@
+#pragma kernel Density
+#include "\Includes\Density.compute"
+#include "\Includes\Noise.compute"
+
+// Cave noise settings
+StructuredBuffer<float3> offsets;
+int octaves;
+float caveScale;
+float caveThreshold;
+float caveIntensity;
+int caveOctaves;
+float caveLacunarity;
+float cavePersistence;
+float yOffset;
+float verticalScale;
+float caveFloor;
+float caveCeiling;
+float surfaceBlend;
+
+float4 params;
+
+// Generate 3D cave noise using multiple noise functions like Minecraft
+float generateMinecraftCaves(float3 pos)
+{
+    // Scale position for cave generation
+    float3 cavePos = pos * caveScale * 0.01;
+    
+    // Generate two perpendicular noise fields for tunnel-like caves
+    float noise1 = 0.0;
+    float noise2 = 0.0;
+    float noise3 = 0.0;
+    
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    
+    // Multi-octave noise for cave structure
+    for (int i = 0; i < caveOctaves; i++)
+    {
+        float3 offset1 = offsets[i % octaves];
+        float3 offset2 = offsets[(i + 1) % octaves] + float3(1000, 0, 0);
+        float3 offset3 = offsets[(i + 2) % octaves] + float3(0, 1000, 0);
+        
+        // Three different noise samples for 3D cave structure
+        noise1 += snoise((cavePos + offset1) * frequency) * amplitude;
+        noise2 += snoise((cavePos + offset2) * frequency) * amplitude;
+        noise3 += snoise((cavePos + offset3) * frequency) * amplitude;
+        
+        amplitude *= cavePersistence;
+        frequency *= caveLacunarity;
+    }
+    
+    // Combine noises to create tunnel-like structures
+    // This mimics Minecraft's approach of using multiple noise fields
+    float cave1 = abs(noise1) + abs(noise2);
+    float cave2 = abs(noise2) + abs(noise3);
+    float cave3 = abs(noise1) + abs(noise3);
+    
+    // Take minimum to create intersecting tunnels
+    float caveValue = min(min(cave1, cave2), cave3);
+    
+    return caveValue;
+}
+
+// Generate larger cavern spaces
+float generateCaverns(float3 pos)
+{
+    float3 cavernPos = pos * caveScale * 0.005; // Larger scale for caverns
+    
+    float cavernNoise = 0.0;
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    
+    for (int i = 0; i < 2; i++) // Fewer octaves for smoother caverns
+    {
+        cavernNoise += snoise((cavernPos + offsets[i]) * frequency) * amplitude;
+        amplitude *= 0.5;
+        frequency *= 2.0;
+    }
+    
+    return abs(cavernNoise);
+}
+
+// Apply height-based cave distribution like Minecraft
+float applyCaveDistribution(float3 pos, float caveValue)
+{
+    float y = pos.y;
+    
+    // Minecraft-style cave distribution: more caves at certain depths
+    float heightFactor = 1.0;
+    
+    // Reduce caves near surface (above y=50)
+    if (y > 50.0)
+    {
+        heightFactor *= saturate((100.0 - y) / 50.0);
+    }
+    
+    // Peak cave generation around y=0 to y=30
+    if (y >= 0.0 && y <= 30.0)
+    {
+        heightFactor = 1.0;
+    }
+    
+    // Reduce caves in deep areas (below y=-30)
+    if (y < -30.0)
+    {
+        heightFactor *= saturate((y + 60.0) / 30.0);
+    }
+    
+    return caveValue * heightFactor;
+}
+
+[numthreads(numThreads, numThreads, numThreads)]
+void Density(int3 id : SV_DispatchThreadID)
+{
+    if (id.x >= numPointsPerAxis || id.y >= numPointsPerAxis || id.z >= numPointsPerAxis) {
+        return;
+    }
+
+    float3 vertPos = float3(id) * (boundsSize / (numPointsPerAxis - 1)) - boundsSize/2;
+    float3 pos = centre + vertPos;
+    
+    // Apply Y offset for positioning cave system
+    pos.y += yOffset;
+    
+    // Generate tunnel-like caves (main cave system)
+    float tunnelCaves = generateMinecraftCaves(pos);
+    
+    // Generate larger cavern spaces
+    float caverns = generateCaverns(pos);
+    
+    // Combine tunnel and cavern systems
+    float combinedCaves = min(tunnelCaves, caverns * 1.5);
+    
+    // Apply height-based distribution
+    combinedCaves = applyCaveDistribution(pos, combinedCaves);
+    
+    // Create cave structure: areas below threshold become hollow
+    float caveValue = combinedCaves - caveThreshold;
+    
+    // Convert to density: negative = air (cave), positive = solid
+    float caveDensity = caveValue * caveIntensity;
+    
+    // Add base terrain density to prevent floating caves
+    float terrainDensity = -(pos.y + 50.0) * 0.02; // Gentle terrain slope
+    
+    // Final density: caves carve out of terrain
+    float finalVal = max(terrainDensity, -caveDensity);
+    
+    // Make surface area more solid (above y=60)
+    if (pos.y > 60.0)
+    {
+        finalVal += (pos.y - 60.0) * 0.1;
+    }
+    
+    int index = indexFromCoord(id.x, id.y, id.z);
+    points[index] = float4(vertPos, finalVal);
+}

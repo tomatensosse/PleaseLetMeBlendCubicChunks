@@ -475,11 +475,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6d59e2083e89dde44a98a1623fc79d0d, type: 2}
   - {fileID: 11400000, guid: b90078800af22f540a55eff20d3ac38e, type: 2}
   - {fileID: 11400000, guid: 3c8891297471ba843be24779eafefd83, type: 2}
+  - {fileID: 11400000, guid: f7b1c8fd619c08248909127cdb8f5f38, type: 2}
   - {fileID: 11400000, guid: 63bdd1e1030d5564ba93846f18f2ce3b, type: 2}
   - {fileID: 11400000, guid: cc49239fe87aa224aa7aa7b6528bfa0b, type: 2}
   - {fileID: 11400000, guid: 8d5b33b64c586564fab9e629bf0d7078, type: 2}
-  chunkSize: 8
-  numPointsPerAxis: 4
+  chunkSize: 16
+  numPointsPerAxis: 8
   threadGroupSize: 8
   neighborSearchMode: 3
   worldGenMode: 0
@@ -489,17 +490,17 @@ MonoBehaviour:
   worldSize: {x: 5, y: 5, z: 5}
   blendCaseMap:
     y1:
-      x1: {x: 0, y: -1, z: 1}
-      x2: {x: 0, y: -1, z: 1}
-      x3: {x: 0, y: -1, z: 1}
+      x1: {x: 2, y: -1, z: 3}
+      x2: {x: 2, y: -1, z: 3}
+      x3: {x: 2, y: -1, z: 3}
     y2:
-      x1: {x: 0, y: -1, z: 1}
-      x2: {x: 0, y: -1, z: 1}
-      x3: {x: 0, y: -1, z: 1}
+      x1: {x: 2, y: -1, z: 3}
+      x2: {x: 2, y: -1, z: 3}
+      x3: {x: 2, y: -1, z: 3}
     y3:
-      x1: {x: 0, y: -1, z: 1}
-      x2: {x: 0, y: -1, z: 1}
-      x3: {x: 0, y: -1, z: 1}
+      x1: {x: 2, y: -1, z: 3}
+      x2: {x: 2, y: -1, z: 3}
+      x3: {x: 2, y: -1, z: 3}
 --- !u!4 &376395480
 Transform:
   m_ObjectHideFlags: 0
@@ -868,6 +869,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   marchingCubesShader: {fileID: 7200000, guid: 979641f34cd22604ebd7525bf7e744d6, type: 3}
+  zeroPoint: 0
 --- !u!4 &1951557700
 Transform:
   m_ObjectHideFlags: 0

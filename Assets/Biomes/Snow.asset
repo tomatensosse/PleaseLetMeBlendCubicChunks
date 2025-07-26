@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3531e2f1e36a4044890da98b3d11216, type: 3}
   m_Name: Snow
   m_EditorClassIdentifier: 
-  biomeName: 
   biomeColor: {r: 0.876691, g: 0.9058175, b: 0.9339623, a: 1}
+  biomeMaterial: {fileID: 2100000, guid: 274d81da9f159e74db527f143ad938e4, type: 2}
   biomeShader:
     rid: 4778838738819874817
   references:
@@ -28,9 +28,9 @@ MonoBehaviour:
         numOctaves: 2
         lacunarity: 1.5
         persistence: 3
-        noiseScale: 0.38
-        noiseWeight: 0.42
-        floorOffset: -16.13
+        noiseScale: 4.37
+        noiseWeight: 0.86
+        floorOffset: -8.6
         weightMultiplier: 1
         hardFloor: 1
         hardFloorWeight: 1

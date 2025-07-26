@@ -26,9 +26,23 @@ public class BlendChunk : Chunk
 
     public override void GenerateMesh()
     {
-        densityBuffer = BuildBuffer();
+        densityBuffer = BuildBuffer(); // Critical for generating the blendChunk mesh
 
-        base.GenerateMesh();
+        Mesh mesh;
+
+        mesh = MeshGenerator.Instance.GenerateMesh(densityBuffer);
+
+        meshFilter.mesh = mesh;
+        meshFilter.sharedMesh = mesh;
+        meshRenderer.material = WorldGenerator.DefaultMaterial; // Generate blended material
+        meshRenderer.sharedMaterial = WorldGenerator.DefaultMaterial;
+
+        if (mesh.vertexCount >= 3)
+        {
+            meshCollider.sharedMesh = mesh;
+        }
+
+        //densityBuffer.Release(); Disabled for dumping densities
     }
 
     void OnDrawGizmos()

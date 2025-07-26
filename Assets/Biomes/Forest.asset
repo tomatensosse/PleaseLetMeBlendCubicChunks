@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3531e2f1e36a4044890da98b3d11216, type: 3}
   m_Name: Forest
   m_EditorClassIdentifier: 
-  biomeName: 
   biomeColor: {r: 0.39364716, g: 0.764151, b: 0.34963512, a: 1}
+  biomeMaterial: {fileID: 2100000, guid: 32425e86946604145b465ccde9238237, type: 2}
   biomeShader:
     rid: 4778838738819874816
   references:
@@ -29,8 +29,8 @@ MonoBehaviour:
         lacunarity: 1.5
         persistence: 3.5
         noiseScale: 3.42
-        noiseWeight: 0.29
-        floorOffset: -16
+        noiseWeight: 0.95
+        floorOffset: -10.15
         weightMultiplier: 1
         hardFloor: 1
         hardFloorWeight: 1

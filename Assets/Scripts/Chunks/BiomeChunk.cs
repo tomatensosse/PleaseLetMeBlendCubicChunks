@@ -29,6 +29,25 @@ public class BiomeChunk : Chunk
         isDensityGenerated = true;
     }
 
+    public override void GenerateMesh()
+    {
+        Mesh mesh;
+
+        mesh = MeshGenerator.Instance.GenerateMesh(densityBuffer);
+
+        meshFilter.mesh = mesh;
+        meshFilter.sharedMesh = mesh;
+        meshRenderer.material = biome.biomeMaterial;
+        meshRenderer.sharedMaterial = biome.biomeMaterial;
+
+        if (mesh.vertexCount >= 3)
+        {
+            meshCollider.sharedMesh = mesh;
+        }
+
+        //densityBuffer.Release(); Disabled for dumping densities
+    }
+
     void OnDrawGizmos()
     {
         if (!WorldGenerator.Instance) { return; }

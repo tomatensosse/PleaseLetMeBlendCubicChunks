@@ -13,10 +13,10 @@ AppendStructuredBuffer<Triangle> triangles;
 RWStructuredBuffer<float4> points;
 
 int numPointsPerAxis;
-float isoLevel;
+float zeroPoint;
 
 float3 interpolateVerts(float4 v1, float4 v2) {
-    float t = (isoLevel - v1.w) / (v2.w - v1.w);
+    float t = (zeroPoint - v1.w) / (v2.w - v1.w); // changed
     return v1.xyz + t * (v2.xyz-v1.xyz);
 }
 
@@ -49,14 +49,14 @@ void March (int3 id : SV_DispatchThreadID)
     // A value of 0 means cube is entirely inside surface; 255 entirely outside.
     // The value is used to look up the edge table, which indicates which edges of the cube are cut by the isosurface.
     int cubeIndex = 0;
-    if (cubeCorners[0].w < isoLevel) cubeIndex |= 1;
-    if (cubeCorners[1].w < isoLevel) cubeIndex |= 2;
-    if (cubeCorners[2].w < isoLevel) cubeIndex |= 4;
-    if (cubeCorners[3].w < isoLevel) cubeIndex |= 8;
-    if (cubeCorners[4].w < isoLevel) cubeIndex |= 16;
-    if (cubeCorners[5].w < isoLevel) cubeIndex |= 32;
-    if (cubeCorners[6].w < isoLevel) cubeIndex |= 64;
-    if (cubeCorners[7].w < isoLevel) cubeIndex |= 128;
+    if (cubeCorners[0].w < zeroPoint) cubeIndex |= 1; // changed
+    if (cubeCorners[1].w < zeroPoint) cubeIndex |= 2;
+    if (cubeCorners[2].w < zeroPoint) cubeIndex |= 4;
+    if (cubeCorners[3].w < zeroPoint) cubeIndex |= 8;
+    if (cubeCorners[4].w < zeroPoint) cubeIndex |= 16;
+    if (cubeCorners[5].w < zeroPoint) cubeIndex |= 32;
+    if (cubeCorners[6].w < zeroPoint) cubeIndex |= 64;
+    if (cubeCorners[7].w < zeroPoint) cubeIndex |= 128;
 
     // Create triangles for current cube configuration
     for (int i = 0; triangulation[cubeIndex][i] != -1; i +=3) {

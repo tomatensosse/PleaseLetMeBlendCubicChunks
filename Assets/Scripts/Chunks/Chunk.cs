@@ -138,24 +138,7 @@ public abstract class Chunk : MonoBehaviour
         }
     }
 
-    public virtual void GenerateMesh()
-    {
-        Mesh mesh;
-
-        mesh = MeshGenerator.Instance.GenerateMesh(densityBuffer, 1);
-
-        meshFilter.mesh = mesh;
-        meshFilter.sharedMesh = mesh;
-        meshRenderer.material = WorldGenerator.DefaultMaterial;
-        meshRenderer.sharedMaterial = WorldGenerator.DefaultMaterial;
-
-        if (mesh.vertexCount >= 3)
-        {
-            meshCollider.sharedMesh = mesh;
-        }
-
-        //densityBuffer.Release(); Disabled for dumping densities
-    }
+    public abstract void GenerateMesh();
 
     [Button("Dump Densities")]
     public void DumpDensities()

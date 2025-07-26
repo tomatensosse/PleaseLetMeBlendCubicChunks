@@ -6,8 +6,8 @@ using UnityEngine;
 public class Biome : ScriptableObject
 {
     [Header("Biome Settings")]
-    public string biomeName;
     public Color biomeColor = Color.white;
+    public Material biomeMaterial;
 
     [SerializeReference]
     public BiomeShader biomeShader;
