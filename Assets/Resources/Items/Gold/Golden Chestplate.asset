@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f821aa915a404149adefd0fd488e3d3, type: 3}
-  m_Name: Iron Pickaxe
+  m_Name: Golden Chestplate
   m_EditorClassIdentifier: 
-  uid: iron_pickaxe
-  itemName: Iron Pickaxe
-  icon: {fileID: -1386335313, guid: 6dd94bc902a7cfd488eec3671cb8bfe3, type: 3}
-  category: {fileID: 11400000, guid: a1625fc7b0bf62347aa863cd4201d498, type: 2}
+  uid: golden_chestplate
+  itemName: Golden Chestplate
+  icon: {fileID: 1968448575, guid: 6dd94bc902a7cfd488eec3671cb8bfe3, type: 3}
+  category: {fileID: 11400000, guid: 4f7901d06d29e1f449a82da32038defe, type: 2}
   isStackable: 0
   maxStack: 1
-  itemType: 0
+  isHoldable: 0
+  holdablePrefab: {fileID: 0}

@@ -15,5 +15,7 @@ MonoBehaviour:
   uid: flame_sword
   itemName: Flame Sword
   icon: {fileID: 776126920, guid: 6dd94bc902a7cfd488eec3671cb8bfe3, type: 3}
+  category: {fileID: 11400000, guid: 0b4808f1a4cb85341ad50483c9579e7e, type: 2}
   isStackable: 0
   maxStack: 1
+  itemType: 0

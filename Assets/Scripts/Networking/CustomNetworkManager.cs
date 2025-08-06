@@ -31,8 +31,6 @@ public class CustomNetworkManager : NetworkManager
 
     private void HandoutRandomItems()
     {
-        Debug.Log("Handing out random items to players...");
-
         foreach (var conn in NetworkServer.connections.Values)
         {
             if (conn.identity != null && conn.identity.TryGetComponent(out Player player))
@@ -40,8 +38,6 @@ public class CustomNetworkManager : NetworkManager
                 // Example logic to give a random item to the player
                 ItemInstance randomItem = ItemDatabase.Instance.GetRandomItem();
                 player.Inventory.AddItem(randomItem);
-
-                Debug.Log($"Gave {randomItem.Item.name} to player {player.netId}");
             }
         }
     }

@@ -15,5 +15,7 @@ MonoBehaviour:
   uid: oak_log
   itemName: Oak Log
   icon: {fileID: 530536682, guid: 6dd94bc902a7cfd488eec3671cb8bfe3, type: 3}
+  category: {fileID: 11400000, guid: 5ff07111b3ac46348a4d517e4aec0a79, type: 2}
   isStackable: 1
   maxStack: 16
+  itemType: 0

@@ -42,10 +42,14 @@ public class PlayerInventory : NetworkBehaviour
             {
                 ItemInstance existingItemInstance = inventory[index];
 
+                Debug.Log($"Amount before: {existingItemInstance.amount}");
+
                 int amountToAdd = Mathf.Min(item.maxStack - existingItemInstance.amount, amountRemaining);
                 int newAmount = existingItemInstance.amount + amountToAdd;
                 existingItemInstance.amount = newAmount;
                 amountRemaining -= amountToAdd;
+
+                Debug.Log($"Amount after: {existingItemInstance.amount}");
 
                 inventory[index] = existingItemInstance; // Triggers OP_SET on Clients
             }
@@ -61,11 +65,26 @@ public class PlayerInventory : NetworkBehaviour
         }
     }
 
-    private void OnInventoryChanged(SyncList<ItemInstance>.Operation op, int index, ItemInstance itemInstance)
+    // Dont use the callback of ItemInstance _DO_NOT_USE_ME
+    // Mirror can't properly deserialize the struct ItemInstance so it sends the previous value insted of updated
+    // index is cool tho, its correct
+    private void OnInventoryChanged(SyncList<ItemInstance>.Operation op, int index, ItemInstance _DO_NOT_USE_ME)
     {
+        ItemInstance itemInstance = inventory[index];
+
         if (isLocalPlayer)
         {
-            Debug.Log($"Inventory changed: {op} {inventory[index].Item.name} x{inventory[index].amount}");
+            switch (op)
+            {
+                case SyncList<ItemInstance>.Operation.OP_ADD:
+                    Debug.Log($"Item added: {itemInstance.amount}");
+                    InventoryUI.Instance.AddItem(itemInstance, index);
+                    break;
+                case SyncList<ItemInstance>.Operation.OP_SET:
+                    Debug.Log($"Item updated: {itemInstance.amount}");
+                    InventoryUI.Instance.UpdateItem(itemInstance, index);
+                    break;
+            }
         }
     }
 

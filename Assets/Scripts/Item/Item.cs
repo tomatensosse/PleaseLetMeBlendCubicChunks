@@ -10,5 +10,7 @@ public class Item : ScriptableObject
     public ItemCategory category;
 
     public bool isStackable;
-    [ShowIf("isStackable"), Min(1)] public int maxStack = 1; // shouldnt be 1   
+    [ShowIf("isStackable"), Min(1)] public int maxStack = 1; // shouldnt be 1
+    public bool isHoldable;
+    [ShowIf("isHoldable")] public GameObject holdablePrefab;
 }

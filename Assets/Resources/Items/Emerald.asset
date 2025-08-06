@@ -15,5 +15,7 @@ MonoBehaviour:
   uid: emerald
   itemName: Emerald
   icon: {fileID: -1866582158, guid: 6dd94bc902a7cfd488eec3671cb8bfe3, type: 3}
+  category: {fileID: 11400000, guid: 933f9805651abcb4aa63ca2301187a01, type: 2}
   isStackable: 1
   maxStack: 16
+  itemType: 0
