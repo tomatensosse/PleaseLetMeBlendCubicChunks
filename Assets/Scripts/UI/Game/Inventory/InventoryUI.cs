@@ -4,11 +4,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : UtopiaUI
 {
     public static InventoryUI Instance { get; private set; }
 
-    public Transform inventoryUI;
     public RectTransform categoryContainer;
     public VerticalLayoutGroup verticalLayoutGroup;
 
@@ -27,22 +26,6 @@ public class InventoryUI : MonoBehaviour
         }
 
         Instance = this;
-    }
-
-    public void ToggleInventory()
-    {
-        inventoryUI.gameObject.SetActive(!inventoryUI.gameObject.activeSelf);
-
-        if (inventoryUI.gameObject.activeSelf)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
     }
 
     public void AddItem(ItemInstance itemInstance, int index)

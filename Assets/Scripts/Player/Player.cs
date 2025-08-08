@@ -36,9 +36,19 @@ public class Player : Entity
             Camera.UpdateCamera();
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            InventoryUI.Instance.ToggleInventory();
+            // toggle pause menu
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            // toggle inventory
+        }
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            // toggle quests
         }
     }
 
@@ -50,5 +60,10 @@ public class Player : Entity
         {
             Movement.FixedUpdateMovement();
         }
+    }
+
+    private void MyMenuInput()
+    {
+        
     }
 }
